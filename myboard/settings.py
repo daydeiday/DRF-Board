@@ -12,15 +12,13 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
-import os # 배포를 위해서 필요할 듯...
-import dj_database_url #1 배포를 위한 설정
+import dj_database_url #1 배포를 위한 db 설정
 import environ #2-(1) 배포 설정 - django_environ 패키지를 가져온다.
 env = environ.Env() # 2-(2) 배포 설정 - 환경변수 설정
 environ.Env.read_env() # 2-(2) 배포 설정 - 환경변수 설정
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -32,14 +30,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
     인증관련 비밀KEY값을 노출하지 않기 위해 django_environ(환경변수 패키지)설치하여
         환경변수를 등록하여 거기에 SECRET_KEY 를 적어놓고 가져다 쓰게끔 코드를 수정한다..!!
 '''
-SECRET_KEY = os.environ['secret_key'] #2-(3)배포 설정 - os.environ['secret_key']에 저장해둔 SECRET_KEY 값을 가져오게끔 설정
+SECRET_KEY = env('secret_key') #2-(3)배포 설정 - env('secret_key')에 저장해둔 SECRET_KEY 값을 가져오게끔 설정
 # 2-(3) 배포 설정 중 SECRET_KEY 값을 환경변수에 저장하는 작업은 다른 곳에서 한다...
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # 배포하기 전에 DEBUG False로 바꿈!!
-DEBUG = False # 배포 설정
-# 배포를 위해서 heroku 주소 넣기..
-ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1'] # 배포 설정.. heroku주소랑 로컬주소 기입. 사용 가능한 호스트를 제한했음.
+DEBUG = env.bool('DEBUG', default=False) # 배포 설정
+# 배포를 위해서 사용 가능한 호스트를 제한했음.
+ALLOWED_HOSTS = ['*'] 
 
 
 # Application definition
@@ -69,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # 배포 설정 !!!
+    'whitenoise.middleware.WhiteNoiseMiddleware', # 배포를 위한 정적파일 사용을 돕는 whitenoise 미들웨어
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -106,8 +104,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-# 1번 배포 설정!!!!!!!!!
-# 1의 dj_database_url 패키지를 활용해 DATABASE['default']를 수정하여,
+#1번 배포 설정!!!!!!!!!
+#1 dj_database_url 패키지를 활용해 DATABASE['default']를 수정하여,
 #  기본 데이터베이스 설정으로 dj_database_url의 config를 사용하게끔 설정한다.
 db_from_env = dj_database_url.config(conn_max_age=500) # 배포 설정!!
 DATABASES['default'].update(db_from_env) #배포 설정!!
@@ -173,5 +171,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = Path(BASE_DIR) / 'media'

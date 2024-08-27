@@ -1,2 +1,1 @@
-// Procfile
-web: gunicorn myboard.wsgi
+web: guicorn myboard.wsgi

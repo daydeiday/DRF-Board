@@ -13,9 +13,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import dj_database_url #1 배포를 위한 db 설정
 import os
-import environ
-env = environ.Env()
-environ.Env.read_env()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

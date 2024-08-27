@@ -30,12 +30,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
     인증관련 비밀KEY값을 노출하지 않기 위해 django_environ(환경변수 패키지)설치하여
         환경변수를 등록하여 거기에 SECRET_KEY 를 적어놓고 가져다 쓰게끔 코드를 수정한다..!!
 '''
-SECRET_KEY = env('secret_key') #2-(3)배포 설정 - env('secret_key')에 저장해둔 SECRET_KEY 값을 가져오게끔 설정
+SECRET_KEY = env('SECRET_KEY') #2-(3)배포 설정 - env('secret_key')에 저장해둔 SECRET_KEY 값을 가져오게끔 설정
 # 2-(3) 배포 설정 중 SECRET_KEY 값을 환경변수에 저장하는 작업은 다른 곳에서 한다...
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # 배포하기 전에 DEBUG False로 바꿈!!
+'''
 DEBUG = env.bool('DEBUG', default=False) # 배포 설정
+'''
+DEBUG = False
 # 배포를 위해서 사용 가능한 호스트를 제한했음.
 ALLOWED_HOSTS = ['*'] 
 
@@ -93,8 +96,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myboard.wsgi.application'
 
-
-# Database
+'''# Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 # 데이터베이스 설정이다.
 # db.sqlite3 파일에 저장된다.
@@ -109,6 +111,17 @@ DATABASES = {
 #  기본 데이터베이스 설정으로 dj_database_url의 config를 사용하게끔 설정한다.
 db_from_env = dj_database_url.config(conn_max_age=500) # 배포 설정!!
 DATABASES['default'].update(db_from_env) #배포 설정!!
+'''
+
+# Database
+# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# 데이터베이스 설정이다.
+import dj_database_url
+
+DATABASES = {
+    'default': env.db('DATABASR_URL')
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -172,5 +185,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STOAGR = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = Path(BASE_DIR) / 'media'

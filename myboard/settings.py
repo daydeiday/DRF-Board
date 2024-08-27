@@ -22,15 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # 기존의 코드 SECRET_KEY = '...' 삭제
-SECRET_KEY = os.environ.get('SECRET_KEY', dafult='your secret key')
-''' (설명!!)(중요!!)배포를 위해 프로젝트를 깃허브에 공개할...
-    공개할 예정이기 때문에 SECRET_KEY가 노출되면 안 된다.
-    인증관련 비밀KEY값을 노출하지 않기 위해 django_environ(환경변수 패키지)설치하여
-        환경변수를 등록하여 거기에 SECRET_KEY 를 적어놓고 가져다 쓰게끔 코드를 수정한다..!!
-'''
-'''SECRET_KEY = env('SECRET_KEY') #2-(3)배포 설정 - env('secret_key')에 저장해둔 SECRET_KEY 값을 가져오게끔 설정
-# 2-(3) 배포 설정 중 SECRET_KEY 값을 환경변수에 저장하는 작업은 다른 곳에서 한다...
-'''
+SECRET_KEY = os.environ.get('SECRET_KEY', dafault='your secret key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # 배포하기 전에 DEBUG False로 바꿈!!

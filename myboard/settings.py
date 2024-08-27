@@ -36,7 +36,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', dafult='your secret key')
 # 배포하기 전에 DEBUG False로 바꿈!!
 DEBUG = 'RENDER' not in os.environ
 # 배포를 위해서 사용 가능한 호스트를 제한했음.
-ALLOWED_HOSTS = ['*'] 
+ALLOWED_HOSTS = []
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME') 
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition

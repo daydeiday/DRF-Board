@@ -114,7 +114,7 @@ DATABASES['default'].update(db_from_env) #배포 설정!!
 # 데이터베이스 설정이다.
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://postgres:postgres@localhost:5432/myboard',
+        default='postgresql://myboard_user:MdUhP2ku3ETF2HYbvE40of3LzvkEhZJ0@dpg-cr6v3ajqf0us73c0ha50-a/myboarddb_197h',
         conn_max_age=600
     )
 }

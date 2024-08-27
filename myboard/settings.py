@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # 기존의 코드 SECRET_KEY = '...' 삭제
-SECRET_KEY = '+$7(p9&ssydz03c#z)$i*p+&w5$&x62j_ab&7cg*mz$+5j058*'
+SECRET_KEY = os.environ.get('SECRET_KEY', dafult='your secret key')
 ''' (설명!!)(중요!!)배포를 위해 프로젝트를 깃허브에 공개할...
     공개할 예정이기 때문에 SECRET_KEY가 노출되면 안 된다.
     인증관련 비밀KEY값을 노출하지 않기 위해 django_environ(환경변수 패키지)설치하여
@@ -34,7 +34,7 @@ SECRET_KEY = '+$7(p9&ssydz03c#z)$i*p+&w5$&x62j_ab&7cg*mz$+5j058*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # 배포하기 전에 DEBUG False로 바꿈!!
-DEBUG = False
+DEBUG = 'RENDER' not in os.environ
 # 배포를 위해서 사용 가능한 호스트를 제한했음.
 ALLOWED_HOSTS = ['*'] 
 
@@ -184,6 +184,10 @@ USE_TZ = True
 # This setting informs Django of the URI path from which your static files will be served to users
 # Here, they well be accessible at your-domain.onrender.com/static/... or yourcustomdomain.com/static/...
 STATIC_URL = '/static/'
+
+#STATIC_ROOT = Path(BASE_DIR) / 'staticfiles'
+
+
 # This production code might break development mode, so we check whether we're in DEBUG mode
 if not DEBUG:    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
     STATIC_ROOT = Path(BASE_DIR) / 'staticfiles'

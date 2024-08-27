@@ -1,0 +1,22 @@
+databases:
+  - name: DRF-Board
+    plan: free
+    databaseName: drf_board
+    user: drf_board_user
+
+services:
+  - type: web
+    plan: free
+    name: mysite
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "python -m uvicorn myboard.asgi:application"
+      envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: DRF-Board
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4

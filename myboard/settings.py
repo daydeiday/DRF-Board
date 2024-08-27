@@ -11,11 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 import dj_database_url #1 배포를 위한 db 설정
-import environ #2-(1) 배포 설정 - django_environ 패키지를 가져온다.
-env = environ.Env() # 2-(2) 배포 설정 - 환경변수 설정
-environ.Env.read_env() # 2-(2) 배포 설정 - 환경변수 설정
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,20 +21,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# 기존의 코드 SECRECT_KEY = '...' 삭제
+# 기존의 코드 SECRET_KEY = '...' 삭제
+SECRET_KEY = '+$7(p9&ssydz03c#z)$i*p+&w5$&x62j_ab&7cg*mz$+5j058*'
 ''' (설명!!)(중요!!)배포를 위해 프로젝트를 깃허브에 공개할...
     공개할 예정이기 때문에 SECRET_KEY가 노출되면 안 된다.
     인증관련 비밀KEY값을 노출하지 않기 위해 django_environ(환경변수 패키지)설치하여
         환경변수를 등록하여 거기에 SECRET_KEY 를 적어놓고 가져다 쓰게끔 코드를 수정한다..!!
 '''
-SECRET_KEY = env('secret_key') #2-(3)배포 설정 - env('secret_key')에 저장해둔 SECRET_KEY 값을 가져오게끔 설정
+'''SECRET_KEY = env('SECRET_KEY') #2-(3)배포 설정 - env('secret_key')에 저장해둔 SECRET_KEY 값을 가져오게끔 설정
 # 2-(3) 배포 설정 중 SECRET_KEY 값을 환경변수에 저장하는 작업은 다른 곳에서 한다...
+'''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # 배포하기 전에 DEBUG False로 바꿈!!
-DEBUG = env.bool('DEBUG', default=False) # 배포 설정
+DEBUG = True
 # 배포를 위해서 사용 가능한 호스트를 제한했음.
-ALLOWED_HOSTS = ['*'] 
+ALLOWED_HOSTS = ['localhost'] 
 
 
 # Application definition
@@ -61,13 +60,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # 순서 중요! 프론트&벡 HTTP요청 CORS 정책 따르기
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # 순서 중요! Security Middleware 바로 다음! 배포를 위한 정적파일 사용을 돕는 미들웨어
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # 배포를 위한 정적파일 사용을 돕는 whitenoise 미들웨어
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -93,8 +92,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myboard.wsgi.application'
 
-
-# Database
+'''# Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 # 데이터베이스 설정이다.
 # db.sqlite3 파일에 저장된다.
@@ -104,11 +102,24 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-#1번 배포 설정!!!!!!!!!
+'''
+
+'''#교재 헤로쿠 1번 배포 설정!!!!!!!!!
 #1 dj_database_url 패키지를 활용해 DATABASE['default']를 수정하여,
 #  기본 데이터베이스 설정으로 dj_database_url의 config를 사용하게끔 설정한다.
 db_from_env = dj_database_url.config(conn_max_age=500) # 배포 설정!!
 DATABASES['default'].update(db_from_env) #배포 설정!!
+'''
+# Database
+# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# 데이터베이스 설정이다.
+DATABASES = {
+    'default': dj_database_url.config(
+        default='postgresql://postgres:postgres@localhost:5432/myboard',
+        conn_max_age=600
+    )
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -170,7 +181,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+# This setting informs Django of the URI path from which your static files will be served to users
+# Here, they well be accessible at your-domain.onrender.com/static/... or yourcustomdomain.com/static/...
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# This production code might break development mode, so we check whether we're in DEBUG mode
+if not DEBUG:    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    STATIC_ROOT = Path(BASE_DIR) / 'staticfiles'
+    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
+    # and renames the files with unique names for each version to support long-term caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = Path(BASE_DIR) / 'media'

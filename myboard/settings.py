@@ -34,7 +34,7 @@ SECRET_KEY = '+$7(p9&ssydz03c#z)$i*p+&w5$&x62j_ab&7cg*mz$+5j058*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # 배포하기 전에 DEBUG False로 바꿈!!
-DEBUG = True
+DEBUG = False
 # 배포를 위해서 사용 가능한 호스트를 제한했음.
 ALLOWED_HOSTS = ['localhost'] 
 
